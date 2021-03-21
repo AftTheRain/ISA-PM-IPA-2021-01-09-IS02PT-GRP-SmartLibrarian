@@ -115,5 +115,11 @@ if __name__ == "__main__":
     import sys
 
     library = Library()
-    print(library.get_info(sys.argv[1]))
+    if library.get_info(sys.argv[1]):
+        print(f'Search Results')
+        print(f'Title     : {library.search_info["title"]}')
+        print(f'Subtitle  : {library.search_info["sub_title"]}')
+        print(f'Author    : {library.search_info["author"]}')
+        print(f'Book Type : {library.search_info["book_type"]}')
+        print(f'Ratings   : {library.search_info["ratings"]}')
 
