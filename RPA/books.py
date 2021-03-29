@@ -124,7 +124,10 @@ class Amazon:
 									'ratings'       : [],
 									'availablity'   : []
 								}
-	def read_info_from_page(self, dict_ref):
+	def read_info_from_page(self, dict_ref, category):
+
+		if t.read('(//a[@class="a-link-normal a-color-tertiary"])[1]') != category:
+			return False
 
 		title          = t.read('//span[@id="productTitle"]')
 		author         = t.read('//div[@id="bylineInfo"]//a[@class="a-link-normal"]')
@@ -140,8 +143,10 @@ class Amazon:
 		print(f'---------------------------')
 		print(f'')
 
+		return True
 
-	def get_info(self, search_query, number_of_recommendations = 3):
+
+	def get_info(self, search_query, number_of_recommendations = 3, category = "Books"):
 		self.search_query = search_query
 
 		try:
@@ -164,7 +169,8 @@ class Amazon:
 				print(f'Going to: {self.url}{search_results}')
 				wait_for_pageload('//input[@id="twotabsearchtextbox"]')
 				t.hover('//div[@id="sims-fbt"]')
-				self.read_info_from_page(self.search_info)
+				if not self.read_info_from_page(self.search_info, category):
+					return False
 
 				recommended_items_on_page = t.count('//div[@id="anonCarousel1"]/ol[@class="a-carousel"]/li')
 				print(f'Recommended items on page: {recommended_items_on_page}')
@@ -178,7 +184,7 @@ class Amazon:
 						t.url(f'{self.url}{recommended_results}')
 						print(f'Going to: {self.url}{recommended_results}')
 						wait_for_pageload('//input[@id="twotabsearchtextbox"]')
-						self.read_info_from_page(self.recommended_info)
+						self.read_info_from_page(self.recommended_info, category)
 						t.url(f'{self.url}{search_results}')
 						print(f'Going to: {self.url}{search_results}')
 						wait_for_pageload('//input[@id="twotabsearchtextbox"]')
@@ -212,7 +218,7 @@ if __name__ == "__main__":
 		print(f'')
 
 		amazon = Amazon()
-		if amazon.get_info(f'{library.search_info["title"][0]} {library.search_info["sub_title"][0]}'):
+		if amazon.get_info((f'%27{library.search_info["title"][0]} {library.search_info["sub_title"][0]}%27').replace(' ', '+')):
 			print(f'Search Results from Amazon:')
 			print(f'Title     : {amazon.search_info["title"]}')
 			print(f'Subtitle  : {amazon.search_info["sub_title"]}')
