@@ -21,7 +21,14 @@ class Library:
 	def read_info_from_page(self, dict_ref):
 		title          = t.read('//h1')
 		sub_title      = t.read('//h1/following-sibling::div[@class="TitleSeries"]')
-		author         = t.read('//h1/following-sibling::div[@class="TitleDetailsHeading-creator"]')
+
+		author = []
+		author_string = t.read('//h1/following-sibling::div[@class="TitleDetailsHeading-creator"]')
+		author_string = author_string[3:].split('\n')
+		for i in range(len(author_string)):
+			if author_string[i].strip() != '':
+				author.append(author_string[i].strip())
+
 		book_type      = t.read('//h1/following-sibling::span')
 		ratings        = t.read('//h1/../following-sibling::div[@class="js-starRatingsContainer"]//@data-global-rating')
 		availablity    = t.read('//h1/../following-sibling::div[@class="show-for-600-up js-copiesAvailableContainer"]//span')
@@ -132,9 +139,17 @@ class Amazon:
 		if t.read('(//a[@class="a-link-normal a-color-tertiary"])[1]') != category:
 			return False
 
-		title          = t.read('//span[@id="productTitle"]')
-		author         = t.read('//div[@id="bylineInfo"]//a[@class="a-link-normal"]')
-		ratings        = t.read('(//span[@class="a-declarative"]//span[@class="a-icon-alt"])[1]')
+		title = t.read('//span[@id="productTitle"]')
+
+		author = []
+		number_of_authors = t.count('//div[@id="bylineInfo"]//a[@class="a-link-normal"]')
+		for i in range(1,number_of_authors+1):
+			author.append(t.read(f'(//div[@id="bylineInfo"]//a[@class="a-link-normal"])[{i}]'))
+
+		ratings = t.read('(//span[@class="a-declarative"]//span[@class="a-icon-alt"])[1]')
+		if ratings != '':
+			ratings = ratings.split(' ')[0]
+
 		#abstract	   = t.read('//div[@id="iframeContent"]')
 
 		dict_ref["title"].append(title)
