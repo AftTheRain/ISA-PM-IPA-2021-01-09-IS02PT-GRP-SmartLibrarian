@@ -1,53 +1,51 @@
 from flask import Flask, request, make_response, jsonify
 import requests
 import json
-import pandas as pd
+import time
+import threading
 import os
+import sys
+
+dir_main = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(dir_main, "RPA"))
+
+import books
 
 app = Flask(__name__)
-## TODO: STEP 1
-# APIKEY = "00284a794972b10c05b7275ef5ada115" # Place your API KEY Here...
-#"8a81d247d650cb16469c4ba3ceb7d265"
+bookList = []
+bookListLimit = 3
 
 # **********************
 # UTIL FUNCTIONS : START
 # **********************
 
-# def getjson(url):
-#     resp =requests.get(url)
-#     return resp.json()
-#
-# #Information of categories are taking from https://en.wikipedia.org/wiki/Beaufort_scale
-# def getWindSpeedCat(windspeed):
-#     dir_cur = os.path.dirname(os.path.abspath(__file__))
-#     dir_cat = os.path.join(dir_cur, r"wind_cat.csv")
-#     wind_cat = pd.read_csv(dir_cat, encoding = "utf-8")
-#     for index, row in wind_cat.iterrows():
-#         print(float(row["Speed_Min"]))
-#         if windspeed >= float(row["Speed_Min"]):
-#             category = row["Category"]
-#     return category
-#
-# def getWeatherInfo(location, aspect):
-#     API_ENDPOINT = f"http://api.openweathermap.org/data/2.5/weather?APPID={APIKEY}&q={location}"
-#     data = getjson(API_ENDPOINT)
-#     print(data)
-#     try:
-#         success = True
-#         if aspect == "weather":
-#             for item in data["weather"]: description = item["description"]
-#             return {"success": success, "description": description}
-#         elif aspect == "temperature":
-#             temp = round(data["main"]["temp"]/10, 1)
-#             return {"success": success, "temp": temp}
-#         elif aspect == "windspeed":
-#             windSpeed = data["wind"]["speed"]
-#             category = getWindSpeedCat(float(windSpeed))
-#             return {"success": success, "windSpeed": windSpeed, "category": category}
-#     except:
-#         success = False
-#         message = data["message"]
-#         return {"success": success, "message": message}
+def startRPA(bList):
+    print("Starting RPA...")
+    for book in bList:
+        library = books.Library()
+        library.get_info(book)
+        print(f'Search Results from NLB:')
+        print(f'Title     : {library.search_info["title"]}')
+        print(f'Subtitle  : {library.search_info["sub_title"]}')
+        print(f'Author    : {library.search_info["author"]}')
+        print(f'Book Type : {library.search_info["book_type"]}')
+        print(f'Ratings   : {library.search_info["ratings"]}')
+        print(f'---------------------------')
+        print(f'')
+    print("End of RPA...")
+
+def clearContext(context):
+    clearedContext = []
+    for cntxt in context:
+        cntxt["lifespanCount"] = 0
+        clearedContext.append(cntxt)
+    return clearedContext
+
+def clearBookList():
+    global bookList
+    bookList = []
+
+x = threading.Thread(target = startRPA, args = (bookList, ))
 
 # **********************
 # UTIL FUNCTIONS : END
@@ -57,45 +55,41 @@ app = Flask(__name__)
 # Intent Handlers funcs : START
 # *****************************
 
-# def getWeatherIntentHandler(location):
-#     """
-#     Get location parameter from dialogflow and call the util function `getWeatherInfo` to get weather info
-#     """
-#     info = getWeatherInfo(location, "weather")
-#     print(info)
-#     if info["success"] == True:
-#         description = info["description"]
-#         return f"Currently, it is {description} in {location}"
-#     else:
-#         message = info["message"]
-#         return f"Sorry, {message}"
-#
-# def getTempIntentHandler(location):
-#     """
-#     Get location parameter from dialogflow and call the util function `getWeatherInfo` to get temperature info
-#     """
-#     info = getWeatherInfo(location, "temperature")
-#     print(info)
-#     if info["success"] == True:
-#         temp = info["temp"]
-#         return f"The current temperature in {location} is {temp}"
-#     else:
-#         message = info["message"]
-#         return f"Sorry, {message}"
-#
-# def getWindSpeedIntentHandler(location):
-#     """
-#     Get location parameter from dialogflow and call the util function `getWeatherInfo` to get wind speed info
-#     """
-#     info = getWeatherInfo(location, "windspeed")
-#     print(info)
-#     if info["success"] == True:
-#         windspeed = info["windSpeed"]
-#         windcat = info["category"]
-#         return f"Currently, in {location}, there is {windcat} with wind speed of {windspeed} m/s"
-#     else:
-#         message = info["message"]
-#         return f"Sorry, {message}"
+def welcomeIntentHandler(context):
+    global x
+    resp = ""
+    if x.is_alive():
+        clearContext(context)
+        resp = "Hello! I am your friendly neighbourhood Librarian. I am still working on your previous enquiry. Please check back in again after a few minutes!"
+    else:
+        resp = "Hello! I am your friendly neighbourhood Librarian. What book would you like to borrow from NLB?"
+    return(resp, context)
+
+def bookTitleIntentHandler(title, context):
+    global x
+    bookList.append(title)
+    resp = ""
+    if len(bookList) == bookListLimit:
+        x = threading.Thread(target = startRPA, args = (bookList, ))
+        x.start()
+        context = clearContext(context)
+        clearBookList()
+        resp = "Ok! I have a full list of the books that you have enquired. I will send you an email on the ratings and availability. Thank you and Goodbye!"
+    else:
+        resp = "Would you like to enquire about another book? Current book list:"
+        for book in bookList:
+            resp = resp + " " + book + ","
+        resp = resp[:-1]
+    return (resp, context)
+
+def bookTitleIntentEndHandler(context):
+    global x
+    x = threading.Thread(target = startRPA, args = (bookList, ))
+    x.start()
+    context = clearContext(context)
+    clearBookList()
+    resp = "Ok! I will send you an email on the ratings and availability of the books that you have enquired. Thank you and Goodbye!"
+    return (resp, context)
 
 # ***************************
 # Intent Handlers funcs : END
@@ -107,18 +101,40 @@ app = Flask(__name__)
 # *****************************
 @app.route('/', methods=['POST'])
 def webhook():
+
     req = request.get_json(silent=True, force=True)
     print(req)
+
     intent_name = req["queryResult"]["intent"]["displayName"]
+    session = req["session"]
+    currentContext = req["queryResult"]["outputContexts"]
 
     resp_text = "Unable to find a matching intent. Try again."
-    if intent_name == "GetBookTitleIntent":
+
+    if intent_name == "Welcome Intent":
+        response = welcomeIntentHandler(currentContext)
+        resp_text = response[0]
+        respContext = response[1]
+
+    elif intent_name == "GetBookTitleIntent":
         bookTitle = req["queryResult"]["parameters"]["book-title"]
-        resp_text = "Looking for " + bookTitle
+        response = bookTitleIntentHandler(bookTitle, currentContext)
+        resp_text = response[0]
+        respContext = response[1]
+
+    elif intent_name == "GetBookTitleIntent - no":
+        response = bookTitleIntentEndHandler(currentContext)
+        resp_text = response[0]
+        respContext = response[1]
+
     else:
         resp_text = "Unable to find a matching intent. Try again."
 
-    return make_response(jsonify({'fulfillmentText': resp_text}))
+    return make_response(jsonify({
+        'fulfillmentText': resp_text,
+        'outputContexts': respContext
+        })
+        )
 
 # ***************************
 # WEBHOOK MAIN ENDPOINT : END
