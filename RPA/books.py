@@ -11,6 +11,7 @@ class Library:
 		self.search_info = {    'title'         : [],
 								'sub_title'     : [],
 								'author'        : [],
+								'abstract'		: [], # not used in NLB
 								'book_type'     : [],
 								'ratings'       : [],
 								'availablity'   : []
@@ -113,16 +114,18 @@ class Amazon:
 		self.search_info = {    	'title'         : [],
 									'sub_title'     : [], #not used in amazon
 									'author'        : [],
+									'abstract'		: [],
 									'book_type'     : [],
 									'ratings'       : [],
-									'availablity'   : []
+									'availablity'   : []  #not used in amazon
 							}
 		self.recommended_info = {	'title'         : [],
 									'sub_title'     : [], #not used in amazon
 									'author'        : [],
+									'abstract'		: [],
 									'book_type'     : [],
 									'ratings'       : [],
-									'availablity'   : []
+									'availablity'   : []  #not used in amazon
 								}
 	def read_info_from_page(self, dict_ref, category):
 
@@ -132,13 +135,16 @@ class Amazon:
 		title          = t.read('//span[@id="productTitle"]')
 		author         = t.read('//div[@id="bylineInfo"]//a[@class="a-link-normal"]')
 		ratings        = t.read('(//span[@class="a-declarative"]//span[@class="a-icon-alt"])[1]')
+		#abstract	   = t.read('//div[@id="iframeContent"]')
 
 		dict_ref["title"].append(title)
 		dict_ref["author"].append(author)
+		#dict_ref['abstract'].append(abstract)
 		dict_ref["ratings"].append(ratings)
 		
 		print(f'Added Title      : {title}')
 		print(f'Added Author     : {author}')
+		#print(f'Added Abstract   : {abstract}')
 		print(f'Added Ratings    : {ratings}')
 		print(f'---------------------------')
 		print(f'')
@@ -168,11 +174,11 @@ class Amazon:
 				t.url(f'{self.url}{search_results}')
 				print(f'Going to: {self.url}{search_results}')
 				wait_for_pageload('//input[@id="twotabsearchtextbox"]')
-				t.hover('//div[@id="sims-fbt"]')
+				t.hover('//div[@class="a-divider a-divider-section"]')
 				if not self.read_info_from_page(self.search_info, category):
 					return False
 
-				recommended_items_on_page = t.count('//div[@id="anonCarousel1"]/ol[@class="a-carousel"]/li')
+				recommended_items_on_page = t.count('//div[@id="anonCarousel2"]/ol[@class="a-carousel"]/li')
 				print(f'Recommended items on page: {recommended_items_on_page}')
 				print(f'---------------------------')
 				print(f'')
@@ -188,7 +194,7 @@ class Amazon:
 						t.url(f'{self.url}{search_results}')
 						print(f'Going to: {self.url}{search_results}')
 						wait_for_pageload('//input[@id="twotabsearchtextbox"]')
-						t.hover('//div[@id="sims-fbt"]')
+						t.hover('//div[@class="a-divider a-divider-section"]')
 
 				t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')
 
@@ -209,30 +215,36 @@ if __name__ == "__main__":
 	library = Library()
 	if library.get_info(sys.argv[1]):
 		print(f'Search Results from NLB:')
-		print(f'Title     : {library.search_info["title"]}')
-		print(f'Subtitle  : {library.search_info["sub_title"]}')
-		print(f'Author    : {library.search_info["author"]}')
-		print(f'Book Type : {library.search_info["book_type"]}')
-		print(f'Ratings   : {library.search_info["ratings"]}')
+		print(f'Title       : {library.search_info["title"]}')
+		print(f'Subtitle    : {library.search_info["sub_title"]}')
+		print(f'Author      : {library.search_info["author"]}')
+		print(f'Abstract    : {library.search_info["abstract"]}')
+		print(f'Book Type   : {library.search_info["book_type"]}')
+		print(f'ratings     : {library.search_info["ratings"]}')		
+		print(f'availablity : {library.search_info["availablity"]}')
 		print(f'---------------------------')
 		print(f'')
 
 		amazon = Amazon()
-		if amazon.get_info((f'%27{library.search_info["title"][0]} {library.search_info["sub_title"][0]}%27').replace(' ', '+')):
+		if amazon.get_info(f'{library.search_info["title"][0]} {library.search_info["sub_title"][0]}'):
 			print(f'Search Results from Amazon:')
-			print(f'Title     : {amazon.search_info["title"]}')
-			print(f'Subtitle  : {amazon.search_info["sub_title"]}')
-			print(f'Author    : {amazon.search_info["author"]}')
-			print(f'Book Type : {amazon.search_info["book_type"]}')
-			print(f'Ratings   : {amazon.search_info["ratings"]}')
+			print(f'Title       : {amazon.search_info["title"]}')
+			print(f'Subtitle    : {amazon.search_info["sub_title"]}')
+			print(f'Author      : {amazon.search_info["author"]}')
+			print(f'Abstract    : {amazon.search_info["abstract"]}')
+			print(f'Book Type   : {amazon.search_info["book_type"]}')
+			print(f'Ratings     : {amazon.search_info["ratings"]}')
+			print(f'availablity : {amazon.search_info["availablity"]}')			
 			print(f'---------------------------')
 			print(f'')
 
 			print(f'Recommended Results from Amazon:')
-			print(f'Title     : {amazon.recommended_info["title"]}')
-			print(f'Subtitle  : {amazon.recommended_info["sub_title"]}')
-			print(f'Author    : {amazon.recommended_info["author"]}')
-			print(f'Book Type : {amazon.recommended_info["book_type"]}')
-			print(f'Ratings   : {amazon.recommended_info["ratings"]}')
+			print(f'Title       : {amazon.recommended_info["title"]}')
+			print(f'Subtitle    : {amazon.recommended_info["sub_title"]}')
+			print(f'Author      : {amazon.recommended_info["author"]}')
+			print(f'Abstract    : {amazon.search_info["abstract"]}')
+			print(f'Book Type   : {amazon.recommended_info["book_type"]}')
+			print(f'Ratings     : {amazon.recommended_info["ratings"]}')
+			print(f'availablity : {amazon.search_info["availablity"]}')			
 			print(f'---------------------------')
 			print(f'')
