@@ -11,9 +11,9 @@ class Library:
 		self.search_info = {    'title'         : [],
 								'sub_title'     : [],
 								'author'        : [],
-								'abstract'		: [], # not used in NLB
 								'book_type'     : [],
 								'ratings'       : [],
+								'reviews'		: [], # not used in NLB
 								'availablity'   : []
 							}
 
@@ -121,17 +121,17 @@ class Amazon:
 		self.search_info = {    	'title'         : [],
 									'sub_title'     : [], #not used in amazon
 									'author'        : [],
-									'abstract'		: [],
 									'book_type'     : [],
 									'ratings'       : [],
+									'reviews'		: [],
 									'availablity'   : []  #not used in amazon
 							}
 		self.recommended_info = {	'title'         : [],
 									'sub_title'     : [], #not used in amazon
 									'author'        : [],
-									'abstract'		: [],
 									'book_type'     : [],
 									'ratings'       : [],
+									'reviews'		: [],
 									'availablity'   : []  #not used in amazon
 								}
 	def read_info_from_page(self, dict_ref, category):
@@ -150,17 +150,17 @@ class Amazon:
 		if ratings != '':
 			ratings = ratings.split(' ')[0]
 
-		#abstract	   = t.read('//div[@id="iframeContent"]')
+		reviews	   = t.read('//div[@class="a-section a-spacing-small a-padding-base"]')
 
 		dict_ref["title"].append(title)
 		dict_ref["author"].append(author)
-		#dict_ref['abstract'].append(abstract)
 		dict_ref["ratings"].append(ratings)
-		
+		dict_ref['reviews'].append(reviews)
+
 		print(f'Added Title      : {title}')
 		print(f'Added Author     : {author}')
-		#print(f'Added Abstract   : {abstract}')
 		print(f'Added Ratings    : {ratings}')
+		print(f'Added Reviews    : {reviews}')
 		print(f'---------------------------')
 		print(f'')
 
@@ -233,9 +233,9 @@ if __name__ == "__main__":
 		print(f'Title       : {library.search_info["title"]}')
 		print(f'Subtitle    : {library.search_info["sub_title"]}')
 		print(f'Author      : {library.search_info["author"]}')
-		print(f'Abstract    : {library.search_info["abstract"]}')
 		print(f'Book Type   : {library.search_info["book_type"]}')
-		print(f'ratings     : {library.search_info["ratings"]}')		
+		print(f'Ratings     : {library.search_info["ratings"]}')
+		#print(f'Reviews     : {library.search_info["reviews"]}')		
 		print(f'availablity : {library.search_info["availablity"]}')
 		print(f'---------------------------')
 		print(f'')
@@ -246,9 +246,9 @@ if __name__ == "__main__":
 			print(f'Title       : {amazon.search_info["title"]}')
 			print(f'Subtitle    : {amazon.search_info["sub_title"]}')
 			print(f'Author      : {amazon.search_info["author"]}')
-			print(f'Abstract    : {amazon.search_info["abstract"]}')
 			print(f'Book Type   : {amazon.search_info["book_type"]}')
 			print(f'Ratings     : {amazon.search_info["ratings"]}')
+			#print(f'Reviews     : {amazon.search_info["reviews"]}')
 			print(f'availablity : {amazon.search_info["availablity"]}')			
 			print(f'---------------------------')
 			print(f'')
@@ -257,9 +257,9 @@ if __name__ == "__main__":
 			print(f'Title       : {amazon.recommended_info["title"]}')
 			print(f'Subtitle    : {amazon.recommended_info["sub_title"]}')
 			print(f'Author      : {amazon.recommended_info["author"]}')
-			print(f'Abstract    : {amazon.search_info["abstract"]}')
 			print(f'Book Type   : {amazon.recommended_info["book_type"]}')
 			print(f'Ratings     : {amazon.recommended_info["ratings"]}')
-			print(f'availablity : {amazon.search_info["availablity"]}')			
+			#print(f'Reviews     : {amazon.recommended_info["reviews"]}')
+			print(f'availablity : {amazon.recommended_info["availablity"]}')			
 			print(f'---------------------------')
 			print(f'')
