@@ -13,8 +13,9 @@ class Library:
 								'author'        : [],
 								'book_type'     : [],
 								'ratings'       : [],
+								'abstract'		: [],
 								'reviews'		: [], # not used in NLB
-								'availablity'   : []
+								'availablity'   : [],
 							}
 
 
@@ -31,6 +32,14 @@ class Library:
 
 		book_type      = t.read('//h1/following-sibling::span')
 		ratings        = t.read('//h1/../following-sibling::div[@class="js-starRatingsContainer"]//@data-global-rating')
+
+		abstract = ''
+		if t.present('//article[contains(@class,"TitleDetailsDescription-description")]'):
+			number_of_para = t.count('//div[@id="main"]//div[@id="title-description"]/child::*/descendant::text()[not(ancestor::b)]')
+			for i in range(1, number_of_para+1):
+				abstract = abstract + ' ' + t.read(f'(//div[@id="main"]//div[@id="title-description"]/child::*/descendant::text()[not(ancestor::b)])[{i}]')
+			abstract = abstract.lstrip()
+
 		availablity    = t.read('//h1/../following-sibling::div[@class="show-for-600-up js-copiesAvailableContainer"]//span')
 
 		self.search_info["title"].append(title)
@@ -38,13 +47,15 @@ class Library:
 		self.search_info["author"].append(author)
 		self.search_info["book_type"].append(book_type)
 		self.search_info["ratings"].append(ratings)
+		self.search_info["abstract"].append(abstract)
 		self.search_info["availablity"].append(availablity)
-		
+
 		print(f'Added Title      : {title}')
 		print(f'Added Subtitle   : {sub_title}')
 		print(f'Added Author     : {author}')
 		print(f'Added Book Type  : {book_type}')
 		print(f'Added Ratings    : {ratings}')
+		print(f'Added Abstract    : {abstract}')
 		print(f'Added Availablity: {availablity}')
 		print(f'---------------------------')
 		print(f'')
@@ -75,7 +86,7 @@ class Library:
 				wait_for_pageload('//div[@class="small-12 columns footer-mobile-element text-center"]')
 				self.read_info_from_page(self.search_info)
 
-				t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')                
+				t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')
 
 				i = 2
 				is_same_title = True
@@ -89,7 +100,7 @@ class Library:
 
 					title          = t.read('//h1')
 					sub_title      = t.read('//h1/following-sibling::div[@class="TitleSeries"]')
-					
+
 					if title == self.search_info["title"][0] and sub_title == self.search_info["sub_title"][0]:
 						self.read_info_from_page(self.search_info)
 
@@ -99,7 +110,7 @@ class Library:
 						print(f'---------------------------')
 						print(f'')
 
-					t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')     
+					t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')
 					i = i + 1
 
 				return True
@@ -123,6 +134,7 @@ class Amazon:
 									'author'        : [],
 									'book_type'     : [],
 									'ratings'       : [],
+									'abstract'		: [],
 									'reviews'		: [],
 									'availablity'   : []  #not used in amazon
 							}
@@ -131,6 +143,7 @@ class Amazon:
 									'author'        : [],
 									'book_type'     : [],
 									'ratings'       : [],
+									'abstract'		: [],
 									'reviews'		: [],
 									'availablity'   : []  #not used in amazon
 								}
@@ -152,14 +165,25 @@ class Amazon:
 
 		reviews	   = t.read('//div[@class="a-section a-spacing-small a-padding-base"]')
 
+		abstract = ''
+		if t.present('//iframe[@id="bookDesc_iframe"]'):
+			t.frame('bookDesc_iframe')
+			number_of_para = t.count('//div[@id="iframeContent"]/descendant::text()[not(ancestor::b)]')
+			for i in range(1, number_of_para+1):
+				abstract = abstract + ' ' + t.read(f'(//div[@id="iframeContent"]/descendant::text()[not(ancestor::b)])[{i}]')
+			t.frame()
+			abstract = abstract.lstrip()
+
 		dict_ref["title"].append(title)
 		dict_ref["author"].append(author)
 		dict_ref["ratings"].append(ratings)
-		dict_ref['reviews'].append(reviews)
+		dict_ref["abstract"].append(abstract)
+		dict_ref["reviews"].append(reviews)
 
 		print(f'Added Title      : {title}')
 		print(f'Added Author     : {author}')
 		print(f'Added Ratings    : {ratings}')
+		print(f'Added Abstract   : {abstract}')
 		print(f'Added Reviews    : {reviews}')
 		print(f'---------------------------')
 		print(f'')
@@ -217,7 +241,7 @@ class Amazon:
 
 			else:
 				return False
-		
+
 		finally:
 
 			t.close()
@@ -235,7 +259,8 @@ if __name__ == "__main__":
 		print(f'Author      : {library.search_info["author"]}')
 		print(f'Book Type   : {library.search_info["book_type"]}')
 		print(f'Ratings     : {library.search_info["ratings"]}')
-		#print(f'Reviews     : {library.search_info["reviews"]}')		
+		#print(f'Abstract    : {library.search_info["abstract"]}')
+		#print(f'Reviews     : {library.search_info["reviews"]}')
 		print(f'availablity : {library.search_info["availablity"]}')
 		print(f'---------------------------')
 		print(f'')
@@ -248,8 +273,9 @@ if __name__ == "__main__":
 			print(f'Author      : {amazon.search_info["author"]}')
 			print(f'Book Type   : {amazon.search_info["book_type"]}')
 			print(f'Ratings     : {amazon.search_info["ratings"]}')
+			#print(f'Abstract    : {library.search_info["abstract"]}')
 			#print(f'Reviews     : {amazon.search_info["reviews"]}')
-			print(f'availablity : {amazon.search_info["availablity"]}')			
+			print(f'availablity : {amazon.search_info["availablity"]}')
 			print(f'---------------------------')
 			print(f'')
 
@@ -259,7 +285,8 @@ if __name__ == "__main__":
 			print(f'Author      : {amazon.recommended_info["author"]}')
 			print(f'Book Type   : {amazon.recommended_info["book_type"]}')
 			print(f'Ratings     : {amazon.recommended_info["ratings"]}')
+			#print(f'Abstract    : {library.recommended_info["abstract"]}')
 			#print(f'Reviews     : {amazon.recommended_info["reviews"]}')
-			print(f'availablity : {amazon.recommended_info["availablity"]}')			
+			print(f'availablity : {amazon.recommended_info["availablity"]}')
 			print(f'---------------------------')
 			print(f'')
