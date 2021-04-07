@@ -66,7 +66,6 @@ class Library:
 		self.search_query = search_query
 
 		try:
-			t.init()
 			t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')
 			print('Search Query: ' + self.search_query)
 			print(f'{self.url}{self.search_query_prefix}{self.search_query}')
@@ -119,7 +118,7 @@ class Library:
 				return False
 
 		finally:
-			t.close()
+			pass
 
 
 
@@ -195,7 +194,6 @@ class Amazon:
 		self.search_query = search_query
 
 		try:
-			t.init()
 			t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')
 			print('Search Query: ' + self.search_query)
 			print(f'Going to: {self.url}{self.search_query_prefix}{self.search_query}')
@@ -244,7 +242,7 @@ class Amazon:
 
 		finally:
 
-			t.close()
+			pass
 
 
 #main
@@ -252,6 +250,7 @@ if __name__ == "__main__":
 	import sys
 
 	library = Library()
+	t.init()
 	if library.get_info(sys.argv[1]):
 		print(f'Search Results from NLB:')
 		print(f'Title       : {library.search_info["title"]}')
@@ -290,3 +289,4 @@ if __name__ == "__main__":
 			print(f'availablity : {amazon.recommended_info["availablity"]}')
 			print(f'---------------------------')
 			print(f'')
+	t.close()

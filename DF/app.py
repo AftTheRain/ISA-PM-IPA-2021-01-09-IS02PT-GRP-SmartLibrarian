@@ -9,7 +9,7 @@ import sys
 dir_main = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(dir_main, "RPA"))
 
-import books
+import RPA
 
 app = Flask(__name__)
 bookList = []
@@ -21,17 +21,7 @@ bookListLimit = 3
 
 def startRPA(bList):
     print("Starting RPA...")
-    for book in bList:
-        library = books.Library()
-        library.get_info(book)
-        print(f'Search Results from NLB:')
-        print(f'Title     : {library.search_info["title"]}')
-        print(f'Subtitle  : {library.search_info["sub_title"]}')
-        print(f'Author    : {library.search_info["author"]}')
-        print(f'Book Type : {library.search_info["book_type"]}')
-        print(f'Ratings   : {library.search_info["ratings"]}')
-        print(f'---------------------------')
-        print(f'')
+    RPA.main(bList)
     print("End of RPA...")
 
 def clearContext(context):
