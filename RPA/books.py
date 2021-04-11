@@ -16,6 +16,7 @@ class Library:
 								'abstract'		: [],
 								'reviews'		: [], # not used in NLB
 								'availablity'   : [],
+								'recommendation': []  # not used in NLB
 							}
 
 
@@ -55,7 +56,10 @@ class Library:
 		print(f'Added Author     : {author}')
 		print(f'Added Book Type  : {book_type}')
 		print(f'Added Ratings    : {ratings}')
-		print(f'Added Abstract    : {abstract}')
+		if len(abstract) < 50:
+			print(f'Added Abstract   : {abstract}')
+		else:
+			print(f'Added Abstract   : {abstract[:50]}...')
 		print(f'Added Availablity: {availablity}')
 		print(f'---------------------------')
 		print(f'')
@@ -135,20 +139,16 @@ class Amazon:
 									'ratings'       : [],
 									'abstract'		: [],
 									'reviews'		: [],
-									'availablity'   : []  #not used in amazon
+									'availablity'   : [],  #not used in amazon
+									'recommendation': []
 							}
-		self.recommended_info = {	'title'         : [],
-									'sub_title'     : [], #not used in amazon
-									'author'        : [],
-									'book_type'     : [],
-									'ratings'       : [],
-									'abstract'		: [],
-									'reviews'		: [],
-									'availablity'   : []  #not used in amazon
-								}
+
 	def read_info_from_page(self, dict_ref, category):
 
 		if t.read('(//a[@class="a-link-normal a-color-tertiary"])[1]') != category:
+			print(f'Incorrect Category Found')
+			print(f'---------------------------')
+			print('')
 			return False
 
 		title = t.read('//span[@id="productTitle"]')
@@ -182,8 +182,14 @@ class Amazon:
 		print(f'Added Title      : {title}')
 		print(f'Added Author     : {author}')
 		print(f'Added Ratings    : {ratings}')
-		print(f'Added Abstract   : {abstract}')
-		print(f'Added Reviews    : {reviews}')
+		if len(abstract) < 50:
+			print(f'Added Abstract   : {abstract}')
+		else:
+			print(f'Added Abstract   : {abstract[:50]}...')
+		if len (reviews) < 50:
+			print(f'Added Reviews   : {reviews}')
+		else:
+			print(f'Added Reviews   : {reviews[:50]}...')
 		print(f'---------------------------')
 		print(f'')
 
@@ -220,6 +226,17 @@ class Amazon:
 				print(f'---------------------------')
 				print(f'')
 
+				recommended_info = {	'title'         : [],
+										'sub_title'     : [], #not used in amazon
+										'author'        : [],
+										'book_type'     : [],
+										'ratings'       : [],
+										'abstract'		: [],
+										'reviews'		: [],
+										'availablity'   : []  #not used in amazon
+									}
+
+
 				if recommended_items_on_page > 0:
 					for j in range(1, min(recommended_items_on_page, number_of_recommendations)+1):
 						t.hover(f'(//div[@id="anonCarousel1"]/ol[@class="a-carousel"]/li)[{j}]')
@@ -227,12 +244,13 @@ class Amazon:
 						t.url(f'{self.url}{recommended_results}')
 						print(f'Going to: {self.url}{recommended_results}')
 						wait_for_pageload('//input[@id="twotabsearchtextbox"]')
-						self.read_info_from_page(self.recommended_info, category)
+						self.read_info_from_page(recommended_info, category)
 						t.url(f'{self.url}{search_results}')
 						print(f'Going to: {self.url}{search_results}')
 						wait_for_pageload('//input[@id="twotabsearchtextbox"]')
 						t.hover('//div[@class="a-divider a-divider-section"]')
 
+				self.search_info['recommendation'] = recommended_info
 				t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')
 
 				return True
@@ -251,6 +269,7 @@ if __name__ == "__main__":
 
 	library = Library()
 	t.init()
+
 	if library.get_info(sys.argv[1]):
 		print(f'Search Results from NLB:')
 		print(f'Title       : {library.search_info["title"]}')
@@ -258,9 +277,11 @@ if __name__ == "__main__":
 		print(f'Author      : {library.search_info["author"]}')
 		print(f'Book Type   : {library.search_info["book_type"]}')
 		print(f'Ratings     : {library.search_info["ratings"]}')
-		#print(f'Abstract    : {library.search_info["abstract"]}')
-		#print(f'Reviews     : {library.search_info["reviews"]}')
-		print(f'availablity : {library.search_info["availablity"]}')
+		if len(library.search_info["abstract"]) < 100:
+			print(f'Added Abstract   : {library.search_info["abstract"]}')
+		else:
+			print(f'Added Abstract   : {library.search_info["abstract"][:100]}...')
+		print(f'Availablity : {library.search_info["availablity"]}')
 		print(f'---------------------------')
 		print(f'')
 
@@ -268,25 +289,30 @@ if __name__ == "__main__":
 		if amazon.get_info(f'{library.search_info["title"][0]} {library.search_info["sub_title"][0]}'):
 			print(f'Search Results from Amazon:')
 			print(f'Title       : {amazon.search_info["title"]}')
-			print(f'Subtitle    : {amazon.search_info["sub_title"]}')
 			print(f'Author      : {amazon.search_info["author"]}')
-			print(f'Book Type   : {amazon.search_info["book_type"]}')
 			print(f'Ratings     : {amazon.search_info["ratings"]}')
-			#print(f'Abstract    : {library.search_info["abstract"]}')
-			#print(f'Reviews     : {amazon.search_info["reviews"]}')
-			print(f'availablity : {amazon.search_info["availablity"]}')
+			if len(amazon.search_info["abstract"][0]) < 50:
+				print(f'Abstract   : {amazon.search_info["abstract"][0]}')
+			else:
+				print(f'Abstract   : {amazon.search_info["abstract"][0][:50]}...')
+			if len (amazon.search_info["reviews"][0]) < 50:
+				print(f'Reviews   : {amazon.search_info["reviews"][0]}')
+			else:
+				print(f'Reviews   : {amazon.search_info["reviews"][0][:50]}...')
 			print(f'---------------------------')
+			for i in range(len(amazon.search_info["recommendation"]["title"])):
+				print(f'Recommended Results from Amazon - {i+1}:')
+				print(f'Title       : {amazon.search_info["recommendation"]["title"][i]}')
+				print(f'Author      : {amazon.search_info["recommendation"]["author"][i]}')
+				print(f'Ratings     : {amazon.search_info["recommendation"]["ratings"][i]}')
+				if len(amazon.search_info["recommendation"]["abstract"][i]) < 50:
+					print(f'Abstract   : {amazon.search_info["recommendation"]["abstract"][i]}')
+				else:
+					print(f'Abstract   : {amazon.search_info["recommendation"]["abstract"][i][:50]}...')
+				if len (amazon.search_info["recommendation"]["reviews"][i]) < 50:
+					print(f'Reviews   : {amazon.search_info["recommendation"]["reviews"][i]}')
+				else:
+					print(f'Reviews   : {amazon.search_info["recommendation"]["reviews"][i][:50]}...')				
 			print(f'')
 
-			print(f'Recommended Results from Amazon:')
-			print(f'Title       : {amazon.recommended_info["title"]}')
-			print(f'Subtitle    : {amazon.recommended_info["sub_title"]}')
-			print(f'Author      : {amazon.recommended_info["author"]}')
-			print(f'Book Type   : {amazon.recommended_info["book_type"]}')
-			print(f'Ratings     : {amazon.recommended_info["ratings"]}')
-			#print(f'Abstract    : {library.recommended_info["abstract"]}')
-			#print(f'Reviews     : {amazon.recommended_info["reviews"]}')
-			print(f'availablity : {amazon.recommended_info["availablity"]}')
-			print(f'---------------------------')
-			print(f'')
 	t.close()
