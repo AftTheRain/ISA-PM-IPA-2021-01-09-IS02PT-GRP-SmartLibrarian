@@ -15,7 +15,7 @@ class Library:
 								'ratings'       : [],
 								'abstract'		: [],
 								'reviews'		: [], # not used in NLB
-								'availablity'   : [],
+								'availability'   : [],
 								'recommendation': []  # not used in NLB
 							}
 
@@ -41,7 +41,7 @@ class Library:
 				abstract = abstract + ' ' + t.read(f'(//div[@id="main"]//div[@id="title-description"]/child::*/descendant::text()[not(ancestor::b)])[{i}]')
 			abstract = abstract.lstrip()
 
-		availablity    = t.read('//h1/../following-sibling::div[@class="show-for-600-up js-copiesAvailableContainer"]//span')
+		availability    = t.read('//h1/../following-sibling::div[@class="show-for-600-up js-copiesAvailableContainer"]//span')
 
 		self.search_info["title"].append(title)
 		self.search_info["sub_title"].append(sub_title)
@@ -49,7 +49,7 @@ class Library:
 		self.search_info["book_type"].append(book_type)
 		self.search_info["ratings"].append(ratings)
 		self.search_info["abstract"].append(abstract)
-		self.search_info["availablity"].append(availablity)
+		self.search_info["availability"].append(availability)
 
 		print(f'Added Title      : {title}')
 		print(f'Added Subtitle   : {sub_title}')
@@ -60,7 +60,7 @@ class Library:
 			print(f'Added Abstract   : {abstract}')
 		else:
 			print(f'Added Abstract   : {abstract[:50]}...')
-		print(f'Added Availablity: {availablity}')
+		print(f'Added Availability: {availability}')
 		print(f'---------------------------')
 		print(f'')
 
@@ -134,7 +134,7 @@ class Amazon:
 									'ratings'       : [],
 									'abstract'		: [],
 									'reviews'		: [],
-									'availablity'   : [],  #not used in amazon
+									'availability'   : [],  #not used in amazon
 									'recommendation': []
 							}
 
@@ -191,7 +191,7 @@ class Amazon:
 		return True
 
 
-	def get_info(self, search_query, number_of_books_to_search = 3, number_of_recommendations = 3, category = "Books"):
+	def get_info(self, search_query, number_of_books_to_search = 1, number_of_recommendations = 2, category = "Books"):
 		self.search_query = search_query
 
 		t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')
@@ -212,7 +212,7 @@ class Amazon:
 				print(f'Going to: {self.url}{search_results}')
 				wait_for_pageload('//input[@id="twotabsearchtextbox"]')
 				t.hover('//div[@class="a-divider a-divider-section"]')
-				
+
 				if self.read_info_from_page(self.search_info, category):
 
 					recommended_items_on_page = t.count('//div[@id="anonCarousel2"]/ol[@class="a-carousel"]/li')
@@ -227,7 +227,7 @@ class Amazon:
 											'ratings'       : [],
 											'abstract'		: [],
 											'reviews'		: [],
-											'availablity'   : []  #not used in amazon
+											'availability'   : []  #not used in amazon
 										}
 
 					if recommended_items_on_page > 0:
@@ -271,7 +271,7 @@ if __name__ == "__main__":
 			print(f'Abstract    : {library.search_info["abstract"]}')
 		else:
 			print(f'Abstract    : [{library.search_info["abstract"][0][:50]}...]')
-		print(f'Availablity : {library.search_info["availablity"]}')
+		print(f'Availability : {library.search_info["availability"]}')
 		print(f'---------------------------')
 		print(f'')
 
@@ -293,7 +293,7 @@ if __name__ == "__main__":
 				else:
 					print(f'Reviews   : [{amazon.search_info["reviews"][i][:50]}...]')
 				print(f'---------------------------')
-				
+
 				for j in range(len(amazon.search_info["recommendation"][i]["title"])):
 					print(f'Recommended Results from Amazon for {amazon.search_info["title"][i]} - {j+1}:')
 					print(f'Title       : {amazon.search_info["recommendation"][i]["title"][j]}')
@@ -306,7 +306,7 @@ if __name__ == "__main__":
 					if len (amazon.search_info["recommendation"][i]["reviews"][j]) < 50:
 						print(f'Reviews   : {amazon.search_info["recommendation"][i]["reviews"][j]}')
 					else:
-						print(f'Reviews   : {amazon.search_info["recommendation"][i]["reviews"][j][:50]}...')				
+						print(f'Reviews   : {amazon.search_info["recommendation"][i]["reviews"][j][:50]}...')
 				print(f'')
 
 	t.close()
