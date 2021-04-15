@@ -15,8 +15,9 @@ class Library:
 								'ratings'       : [],
 								'abstract'		: [],
 								'reviews'		: [], # not used in NLB
-								'availability'   : [],
-								'recommendation': []  # not used in NLB
+								'availability'  : [],
+								'recommendation': [], # not used in NLB
+								'link'			: []
 							}
 
 
@@ -42,14 +43,16 @@ class Library:
 			abstract = abstract.lstrip()
 
 		availability    = t.read('//h1/../following-sibling::div[@class="show-for-600-up js-copiesAvailableContainer"]//span')
+		link = t.url()
 
-		self.search_info["title"].append(title)
-		self.search_info["sub_title"].append(sub_title)
-		self.search_info["author"].append(author)
-		self.search_info["book_type"].append(book_type)
-		self.search_info["ratings"].append(ratings)
-		self.search_info["abstract"].append(abstract)
-		self.search_info["availability"].append(availability)
+		dict_ref["title"].append(title)
+		dict_ref["sub_title"].append(sub_title)
+		dict_ref["author"].append(author)
+		dict_ref["book_type"].append(book_type)
+		dict_ref["ratings"].append(ratings)
+		dict_ref["abstract"].append(abstract)
+		dict_ref["availability"].append(availability)
+		dict_ref["link"].append(link)
 
 		print(f'Added Title      : {title}')
 		print(f'Added Subtitle   : {sub_title}')
@@ -61,6 +64,7 @@ class Library:
 		else:
 			print(f'Added Abstract   : {abstract[:50]}...')
 		print(f'Added Availability: {availability}')
+		print(f'Added Link: {link}')
 		print(f'---------------------------')
 		print(f'')
 
@@ -134,8 +138,9 @@ class Amazon:
 									'ratings'       : [],
 									'abstract'		: [],
 									'reviews'		: [],
-									'availability'   : [],  #not used in amazon
-									'recommendation': []
+									'availability'  : [],  #not used in amazon
+									'recommendation': [],
+									'link'			: []
 							}
 
 	def read_info_from_page(self, dict_ref, category):
@@ -168,11 +173,14 @@ class Amazon:
 			t.frame()
 			abstract = abstract.lstrip()
 
+		link = t.url()
+
 		dict_ref["title"].append(title)
 		dict_ref["author"].append(author)
 		dict_ref["ratings"].append(ratings)
 		dict_ref["abstract"].append(abstract)
 		dict_ref["reviews"].append(reviews)
+		dict_ref["link"].append(link)
 
 		print(f'Added Title      : {title}')
 		print(f'Added Author     : {author}')
@@ -182,9 +190,9 @@ class Amazon:
 		else:
 			print(f'Added Abstract   : {abstract[:50]}...')
 		if len (reviews) < 50:
-			print(f'Added Reviews   : {reviews}')
+			print(f'Added Reviews    : {reviews}')
 		else:
-			print(f'Added Reviews   : {reviews[:50]}...')
+			print(f'Added Reviews    : {reviews[:50]}...')
 		print(f'---------------------------')
 		print(f'')
 
@@ -227,7 +235,8 @@ class Amazon:
 											'ratings'       : [],
 											'abstract'		: [],
 											'reviews'		: [],
-											'availability'   : []  #not used in amazon
+											'availability'  : [],  #not used in amazon
+											'link'			: []
 										}
 
 					if recommended_items_on_page > 0:
@@ -271,7 +280,8 @@ if __name__ == "__main__":
 			print(f'Abstract    : {library.search_info["abstract"]}')
 		else:
 			print(f'Abstract    : [{library.search_info["abstract"][0][:50]}...]')
-		print(f'Availability : {library.search_info["availability"]}')
+		print(f'Availability: {library.search_info["availability"]}')
+		print(f'Link        : {library.search_info["link"]}')
 		print(f'---------------------------')
 		print(f'')
 
@@ -292,6 +302,7 @@ if __name__ == "__main__":
 					print(f'Reviews   : {amazon.search_info["reviews"][i]}')
 				else:
 					print(f'Reviews   : [{amazon.search_info["reviews"][i][:50]}...]')
+				print(f'Link        : {amazon.search_info["link"][i]}')
 				print(f'---------------------------')
 
 				for j in range(len(amazon.search_info["recommendation"][i]["title"])):
@@ -307,6 +318,7 @@ if __name__ == "__main__":
 						print(f'Reviews   : {amazon.search_info["recommendation"][i]["reviews"][j]}')
 					else:
 						print(f'Reviews   : {amazon.search_info["recommendation"][i]["reviews"][j][:50]}...')
+					print(f'Link        : {amazon.search_info["recommendation"][i]["link"][j]}')
 				print(f'')
 
 	t.close()
