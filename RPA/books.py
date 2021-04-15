@@ -193,6 +193,7 @@ class Amazon:
 			print(f'Added Reviews    : {reviews}')
 		else:
 			print(f'Added Reviews    : {reviews[:50]}...')
+		print(f'Added Link       : {title}')
 		print(f'---------------------------')
 		print(f'')
 
