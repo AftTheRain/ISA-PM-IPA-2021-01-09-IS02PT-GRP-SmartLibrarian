@@ -8,8 +8,11 @@ import sys
 
 dir_main = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(dir_main, "RPA"))
+dir_main = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(dir_main, "IntelligentBookAnalytics"))
 
 import RPA
+import IntelligentBookAnalytics as IBA
 
 app = Flask(__name__)
 bookList = []
