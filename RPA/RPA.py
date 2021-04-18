@@ -1,6 +1,6 @@
 import json
 import books
-import email
+import email_RPA
 import tagui as t
 
 def extractInfo(bookList):
@@ -86,6 +86,8 @@ def composeSendEmail(bookList, bookInfoList):
         else:
             text += (f'BOOK {i+1}: "{bookList[i]}" - Not found in NLB[enter]')
         text += ('-------------------------------------------------------------------------[enter]')
+
+
         if not foundInNLB:
             text += '[enter]'
             continue
@@ -95,10 +97,34 @@ def composeSendEmail(bookList, bookInfoList):
         text += addInfoText('Author', bookInfoList[i]["NLB"]["author"])
         text += addInfoText('Book Type', bookInfoList[i]["NLB"]["book_type"])
         text += addInfoText('Ratings', bookInfoList[i]["NLB"]["ratings"])
-        text += addInfoText('Abstract', bookInfoList[i]["NLB"]["abstract"])
+        text += addInfoText('Punchline', bookInfoList[i]["NLB"]["abstract"])
         text += addInfoText('Availability', bookInfoList[i]["NLB"]["availability"])
-        # text += addInfoText('Link', bookInfoList[i]["NLB"]["URL"])
+        text += addInfoText('Link', bookInfoList[i]["NLB"]["link"])
+        text += '[enter]'
 
+        if not foundInAmazon:
+            text += '[enter]'
+            continue
+
+        # Amazon information
+        text += "Let's see what information Amazon has about a similar book![enter]"
+        text += addInfoText('Title', bookInfoList[i]["Amazon"]["title"])
+        text += addInfoText('Subtitle', bookInfoList[i]["Amazon"]["sub_title"])
+        text += addInfoText('Author', bookInfoList[i]["Amazon"]["author"])
+        text += addInfoText('Book Type', bookInfoList[i]["Amazon"]["book_type"])
+        text += addInfoText('Ratings', bookInfoList[i]["Amazon"]["ratings"])
+        text += addInfoText('Punchline', bookInfoList[i]["Amazon"]["abstract"])
+        text += '[enter]'
+
+        if not amazonRecList:
+            text += '[enter]'
+            continue
+
+        # Amazon recommended book list
+        text += "People who bought this book also bought these other books:[enter]"
+        for b in range(len(bookInfoList[i]["Amazon"]["recommendation"][0]["title"])):
+            text += f'{b+1}: '
+            text += addInfoText('', bookInfoList[i]["Amazon"]["recommendation"][0]["title"][b])
 
 
         text += '[enter]'
@@ -112,7 +138,7 @@ def composeSendEmail(bookList, bookInfoList):
     return text
 
 def main(bookList):
-    emailAgent = email.Email()
+    emailAgent = email_RPA.Email()
     emailSub = '[SmartLibrarian] NLB Information for '
 
     for title in bookList:
@@ -125,5 +151,5 @@ def main(bookList):
     t.close()
 
 if __name__ == "__main__":
-    bookList = ["The Promised Land", "Becoming"]
+    bookList = ["The Promised Land", "Quidditch"]
     main(bookList)

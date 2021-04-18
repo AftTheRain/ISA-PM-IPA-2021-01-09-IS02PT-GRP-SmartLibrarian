@@ -1,5 +1,12 @@
 from useful_lib import wait_for_pageload
 import rpa as t
+import os
+import sys
+
+dir_main = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(dir_main, "IntelligentBookAnalytics"))
+
+import IntelligentBookAnalytics as IBA
 
 
 class Library:
@@ -19,6 +26,7 @@ class Library:
 								'recommendation': [], # not used in NLB
 								'link'			: []
 							}
+		self.bookAnalytics = IBA.IntelligentBookAnalytics()
 
 
 	def read_info_from_page(self, dict_ref):
@@ -41,6 +49,7 @@ class Library:
 			for i in range(1, number_of_para+1):
 				abstract = abstract + ' ' + t.read(f'(//div[@id="main"]//div[@id="title-description"]/child::*/descendant::text()[not(ancestor::b)])[{i}]')
 			abstract = abstract.lstrip()
+			abstract = self.bookAnalytics.get_summary(abstract, max_length = 150)
 
 		availability    = t.read('//h1/../following-sibling::div[@class="show-for-600-up js-copiesAvailableContainer"]//span')
 		link = t.url()
@@ -59,10 +68,10 @@ class Library:
 		print(f'Added Author     : {author}')
 		print(f'Added Book Type  : {book_type}')
 		print(f'Added Ratings    : {ratings}')
-		if len(abstract) < 50:
+		if len(abstract) < 100:
 			print(f'Added Abstract   : {abstract}')
 		else:
-			print(f'Added Abstract   : {abstract[:50]}...')
+			print(f'Added Abstract   : {abstract[:100]}...')
 		print(f'Added Availability: {availability}')
 		print(f'Added Link: {link}')
 		print(f'---------------------------')
@@ -142,6 +151,7 @@ class Amazon:
 									'recommendation': [],
 									'link'			: []
 							}
+		self.bookAnalytics = IBA.IntelligentBookAnalytics()
 
 	def read_info_from_page(self, dict_ref, category):
 
@@ -172,6 +182,7 @@ class Amazon:
 				abstract = abstract + ' ' + t.read(f'(//div[@id="iframeContent"]/descendant::text()[not(ancestor::b)])[{i}]')
 			t.frame()
 			abstract = abstract.lstrip()
+			abstract = self.bookAnalytics.get_summary(abstract, max_length = 150)
 
 		link = t.url()
 
@@ -185,10 +196,10 @@ class Amazon:
 		print(f'Added Title      : {title}')
 		print(f'Added Author     : {author}')
 		print(f'Added Ratings    : {ratings}')
-		if len(abstract) < 50:
+		if len(abstract) < 100:
 			print(f'Added Abstract   : {abstract}')
 		else:
-			print(f'Added Abstract   : {abstract[:50]}...')
+			print(f'Added Abstract   : {abstract[:100]}...')
 		if len (reviews) < 50:
 			print(f'Added Reviews    : {reviews}')
 		else:
@@ -200,7 +211,7 @@ class Amazon:
 		return True
 
 
-	def get_info(self, search_query, number_of_books_to_search = 1, number_of_recommendations = 2, category = "Books"):
+	def get_info(self, search_query, number_of_books_to_search = 10, number_of_recommendations = 2, category = "Books"):
 		self.search_query = search_query
 
 		t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')
@@ -213,50 +224,58 @@ class Amazon:
 		print(f'---------------------------')
 		print(f'')
 
+		items_on_page_titles = []
+
 		if items_on_page > 0:
 			for i in range(1, min(number_of_books_to_search, items_on_page)+1):
-				t.hover(f'(//h2/a[contains(@class, "a-text-normal")])[{i}]')
-				search_results = t.read(f'(//h2/a[contains(@class, "a-text-normal")])[{i}]/@href')
-				t.url(f'{self.url}{search_results}')
-				print(f'Going to: {self.url}{search_results}')
+				items_on_page_titles.append(t.read(f'(//h2/a[contains(@class, "a-text-normal")])[{i}]'))
+
+			best_match_title_index = self.bookAnalytics.find_matchingtitle(self.search_query, items_on_page_titles) + 1
+			print(f'Best Matched Book Index: {best_match_title_index}')
+			print(f'')
+
+			t.hover(f'(//h2/a[contains(@class, "a-text-normal")])[{best_match_title_index}]')
+			search_results = t.read(f'(//h2/a[contains(@class, "a-text-normal")])[{best_match_title_index}]/@href')
+			t.url(f'{self.url}{search_results}')
+			print(f'Going to: {self.url}{search_results}')
+			wait_for_pageload('//input[@id="twotabsearchtextbox"]')
+			t.hover('//div[@class="a-divider a-divider-section"]')
+
+			if self.read_info_from_page(self.search_info, category):
+
+				recommended_items_on_page = t.count('//div[@id="anonCarousel2"]/ol[@class="a-carousel"]/li')
+				print(f'Recommended items on page: {recommended_items_on_page}')
+				print(f'---------------------------')
+				print(f'')
+
+				recommended_info = {	'title'         : [],
+										'sub_title'     : [], #not used in amazon
+										'author'        : [],
+										'book_type'     : [],
+										'ratings'       : [],
+										'abstract'		: [],
+										'reviews'		: [],
+										'availability'  : [],  #not used in amazon
+										'link'			: []
+									}
+
+				if recommended_items_on_page > 0:
+					for j in range(1, min(recommended_items_on_page, number_of_recommendations)+1):
+						t.hover(f'(//div[@id="anonCarousel1"]/ol[@class="a-carousel"]/li)[{j}]')
+						recommended_results = t.read(f'(//div[@id="anonCarousel1"]/ol[@class="a-carousel"]/li)[{j}]/a/@href')
+						t.url(f'{self.url}{recommended_results}')
+						print(f'Going to: {self.url}{recommended_results}')
+						wait_for_pageload('//input[@id="twotabsearchtextbox"]')
+						self.read_info_from_page(recommended_info, category)
+						t.url(f'{self.url}{search_results}')
+						print(f'Going to: {self.url}{search_results}')
+						wait_for_pageload('//input[@id="twotabsearchtextbox"]')
+						t.hover('//div[@class="a-divider a-divider-section"]')
+
+				self.search_info['recommendation'].append(recommended_info)
+				t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')
+				print(f'Going to: {self.url}{self.search_query_prefix}{self.search_query}')
 				wait_for_pageload('//input[@id="twotabsearchtextbox"]')
-				t.hover('//div[@class="a-divider a-divider-section"]')
-
-				if self.read_info_from_page(self.search_info, category):
-
-					recommended_items_on_page = t.count('//div[@id="anonCarousel2"]/ol[@class="a-carousel"]/li')
-					print(f'Recommended items on page: {recommended_items_on_page}')
-					print(f'---------------------------')
-					print(f'')
-
-					recommended_info = {	'title'         : [],
-											'sub_title'     : [], #not used in amazon
-											'author'        : [],
-											'book_type'     : [],
-											'ratings'       : [],
-											'abstract'		: [],
-											'reviews'		: [],
-											'availability'  : [],  #not used in amazon
-											'link'			: []
-										}
-
-					if recommended_items_on_page > 0:
-						for j in range(1, min(recommended_items_on_page, number_of_recommendations)+1):
-							t.hover(f'(//div[@id="anonCarousel1"]/ol[@class="a-carousel"]/li)[{j}]')
-							recommended_results = t.read(f'(//div[@id="anonCarousel1"]/ol[@class="a-carousel"]/li)[{j}]/a/@href')
-							t.url(f'{self.url}{recommended_results}')
-							print(f'Going to: {self.url}{recommended_results}')
-							wait_for_pageload('//input[@id="twotabsearchtextbox"]')
-							self.read_info_from_page(recommended_info, category)
-							t.url(f'{self.url}{search_results}')
-							print(f'Going to: {self.url}{search_results}')
-							wait_for_pageload('//input[@id="twotabsearchtextbox"]')
-							t.hover('//div[@class="a-divider a-divider-section"]')
-
-					self.search_info['recommendation'].append(recommended_info)
-					t.url(f'{self.url}{self.search_query_prefix}{self.search_query}')
-					print(f'Going to: {self.url}{self.search_query_prefix}{self.search_query}')
-					wait_for_pageload('//input[@id="twotabsearchtextbox"]')
 
 			return True
 		else:
