@@ -138,6 +138,13 @@ def composeSendEmail(bookList, bookInfoList):
     return text
 
 def main(bookList):
+    email_recipient = ''
+    try:
+        with open('email_recipient.txt') as f:
+            email_recipient = f.readlines()[0][:-1]
+    except:
+        pass
+
     emailAgent = email_RPA.Email()
     emailSub = '[SmartLibrarian] NLB Information for '
 
@@ -147,7 +154,7 @@ def main(bookList):
 
     t.init()
     emailBody = composeSendEmail(bookList, extractInfo(bookList))
-    emailAgent.compose_email(subject=emailSub, body=emailBody)
+    emailAgent.compose_email(subject=emailSub, body=emailBody, mail_to=email_recipient)
     t.close()
 
 if __name__ == "__main__":

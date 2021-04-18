@@ -10,7 +10,7 @@ class Email:
 
 
 	def has_signed_in(self):
-		
+
 		if t.present('//div[@role="button"][.="Compose"]'):
 			print(f'Signed in to email account')
 			print(f'')
@@ -19,7 +19,7 @@ class Email:
 		else:
 			print(f'Not signed in to email account')
 			print(f'')
-			return False	
+			return False
 
 	def sign_in(self):
 		t.url(self.sign_in_url)
@@ -32,8 +32,8 @@ class Email:
 
 
 
-	def compose_email(self, body, subject = '', mail_to = 'iss.ipa.2021@gmail.com'):
-		
+	def compose_email(self, body, subject = '', mail_to = ''):
+
 		try:
 			t.init()
 			t.url(self.url)
@@ -41,6 +41,10 @@ class Email:
 
 			if not self.has_signed_in():
 				self.sign_in()
+
+			if mail_to == '':
+				t.click('//img[@class="gb_Da gbii"]')
+				mail_to = t.read('//div[@class="gb_ob"]')
 
 			t.hover('//div[@role="button"][.="Compose"]')
 			t.click('//div[@role="button"][.="Compose"]')
@@ -55,5 +59,12 @@ class Email:
 			t.close()
 #main
 if __name__ == "__main__":
+	email_recipient = ''
+	try:
+		with open('email_recipient.txt') as f:
+			email_recipient = f.readlines()[0][:-1]
+	except:
+		pass
+
 	email = Email()
-	email.compose_email(subject='Automated Email', body='This is a test')
+	email.compose_email(subject='Automated Email', body='This is a test', mail_to=email_recipient)
