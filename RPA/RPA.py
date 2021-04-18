@@ -43,7 +43,8 @@ def extractInfo(bookList):
     return bookInfoList
 
 def addInfoText(textField, infoLst):
-    text = textField + ': '
+    if textField not '':
+        text = textField + ': '
 
     if len(infoLst) == 0: return ""
 
@@ -93,14 +94,15 @@ def composeSendEmail(bookList, bookInfoList):
             continue
 
         # NLB information
-        text += addInfoText('Subtitle', bookInfoList[i]["NLB"]["sub_title"])
-        text += addInfoText('Author', bookInfoList[i]["NLB"]["author"])
-        text += addInfoText('Book Type', bookInfoList[i]["NLB"]["book_type"])
-        text += addInfoText('Ratings', bookInfoList[i]["NLB"]["ratings"])
-        text += addInfoText('Punchline', bookInfoList[i]["NLB"]["abstract"])
-        text += addInfoText('Availability', bookInfoList[i]["NLB"]["availability"])
-        text += addInfoText('Link', bookInfoList[i]["NLB"]["link"])
-        text += '[enter]'
+        for b in range(len(bookInfoList[i]["NLB"]["title"])):
+            text += addInfoText('Subtitle', bookInfoList[i]["NLB"]["sub_title"][b])
+            text += addInfoText('Author', bookInfoList[i]["NLB"]["author"][b])
+            text += addInfoText('Book Type', bookInfoList[i]["NLB"]["book_type"][b])
+            text += addInfoText('Ratings', bookInfoList[i]["NLB"]["ratings"][b])
+            text += addInfoText('Punchline', bookInfoList[i]["NLB"]["abstract"][b])
+            text += addInfoText('Availability', bookInfoList[i]["NLB"]["availability"][b])
+            text += addInfoText('Link', bookInfoList[i]["NLB"]["link"][b])
+            text += '[enter]'
 
         if not foundInAmazon:
             text += '[enter]'
