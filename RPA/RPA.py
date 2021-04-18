@@ -52,9 +52,10 @@ def addInfoText(textField, infoLst):
         if isinstance(info, list):
             for item in info:
                 text += (item+', ')
-            text = text[:-2]
         else:
-            text += info
+            text += (info+', ')
+        text = text[:-2]
+
     text += '[enter]'
     return text
 
