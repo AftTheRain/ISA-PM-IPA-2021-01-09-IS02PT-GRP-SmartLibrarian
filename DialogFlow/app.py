@@ -11,6 +11,9 @@ sys.path.append(os.path.join(dir_main, "RPA"))
 dir_main = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(dir_main, "IntelligentBookAnalytics"))
 
+print("Loading models. This will take a few minutes...")
+import RPA
+
 app = Flask(__name__)
 bookList = []
 bookListLimit = 3
@@ -18,10 +21,6 @@ bookListLimit = 3
 # **********************
 # UTIL FUNCTIONS : START
 # **********************
-
-def loadRPA():
-    print("Loading models. This will take a few minutes...")
-    import RPA
 
 def startRPA(bList):
     print("Starting RPA...")
@@ -135,5 +134,4 @@ def webhook():
 # ***************************
 
 if __name__ == '__main__':
-    loadRPA()
     app.run(debug=True, host='0.0.0.0', port=5000)
