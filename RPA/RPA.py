@@ -43,7 +43,8 @@ def extractInfo(bookList):
     return bookInfoList
 
 def addInfoText(textField, infoLst):
-    if textField not '':
+    text = ''
+    if not (textField == ''):
         text = textField + ': '
 
     if len(infoLst) == 0: return ""
