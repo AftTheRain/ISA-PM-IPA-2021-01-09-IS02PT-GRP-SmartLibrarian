@@ -13,8 +13,8 @@ The Smart Librarian seeks to disrupt the market by offering the books for free t
 Full Name | Student ID | Areas of Responsibility
 -|-|-
 Yang Jieshen | A0003901Y | Conversational UI, Email RPA and Integration
-Onn Wei Cheng | A0092201X | NLB Availablity Checker and Amazon Recommendation System
-Nirav Janak Parikh | A0213573J | Intelligent Smart 
+Onn Wei Cheng | A0092201X | NLB Availablity Checker & Amazon Recommendation System
+Nirav Janak Parikh | A0213573J | Intelligent Smart Title Matcher & Abstract Summariser
 
 # Section 4: Video
 ### Promotional Video of Smart Librarian:
