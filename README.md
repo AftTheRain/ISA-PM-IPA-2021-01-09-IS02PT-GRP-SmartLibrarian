@@ -16,6 +16,14 @@ Yang Jieshen | A0003901Y | Conversational UI, Email RPA and Integration
 Onn Wei Cheng | A0092201X | NLB Availablity Checker & Amazon Recommendation System
 Nirav Janak Parikh | A0213573J | Intelligent Smart Title Matcher & Abstract Summariser
 
+# Section 4: Videos
+
+### Promotional Video
+[a link](https://github.com/AftTheRain/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian/blob/main/Video/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian-Promotion.mp4)
+
+### System Architecture
+[a link](https://github.com/AftTheRain/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian/blob/main/Video/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian-SystemArchitecture.mp4)
+
 # Section 4: Installation & User Guide
 CookWhatAh rides on a Telegram application as the user interface to implement our system. Please install Telegram in your respective platforms to run the application.
 
