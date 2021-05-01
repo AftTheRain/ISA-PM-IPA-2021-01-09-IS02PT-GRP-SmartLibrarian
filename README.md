@@ -16,15 +16,7 @@ Yang Jieshen | A0003901Y | Conversational UI, Email RPA and Integration
 Onn Wei Cheng | A0092201X | NLB Availablity Checker & Amazon Recommendation System
 Nirav Janak Parikh | A0213573J | Intelligent Smart Title Matcher & Abstract Summariser
 
-# Section 4: Video
-### Promotional Video of Smart Librarian:
-[![IMAGE ALT TEXT]()
-
-### High Level System Design of Smart Librarian:
-[![IMAGE ALT TEXT]()
-
-
-# Section 5: Installation & User Guide
+# Section 4: Installation & User Guide
 CookWhatAh rides on a Telegram application as the user interface to implement our system. Please install Telegram in your respective platforms to run the application.
 
 ### Installation instructions for Smart Librarian:
