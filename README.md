@@ -40,12 +40,14 @@ Note: This file is 3GB big
 
 5.	Run “install.bat” to install all required python packages
 
-6.	If using own account and not the credentials provided, will need to import SmartLibrarian agent through the zip file provided in Github. If test is to be done on Google Assistant, integration setup with Google Assistant needs to be done under “Integrations” tab.
+6.	If using your own account in Dialogflow, and not the credentials provided, import SmartLibrarian agent through the zip file provided in Github into Dialogflow to setup the agent. 
+
+7.	If test is to be done on Google Assistant, integration setup with Google Assistant needs to be done under “Integrations” tab.
 DialogFlow link: https://dialogflow.cloud.google.com/
 
-For the provided credentials, all setup in dialogflow is done, including Google Assistant integration
+For the provided credentials, all setup in Dialogflow is done, including Google Assistant integration
 
-7.	Log in to gmail account using tagui browser which is used to send the NLB email
+8.	Log in to Gmail account using tagui browser which is used to send the NLB email
 
 
 ### User Guide:
