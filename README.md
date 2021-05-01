@@ -19,10 +19,10 @@ Nirav Janak Parikh | A0213573J | Intelligent Smart Title Matcher & Abstract Summ
 # Section 4: Videos
 
 ### Promotional Video
-[a link](https://github.com/AftTheRain/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian/blob/main/Video/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian-Promotion.mp4)
+[Click Here for the Video](https://github.com/AftTheRain/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian/blob/main/Video/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian-Promotion.mp4)
 
 ### System Architecture
-[a link](https://github.com/AftTheRain/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian/blob/main/Video/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian-SystemArchitecture.mp4)
+[Click Here for the Video](https://github.com/AftTheRain/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian/blob/main/Video/ISA-PM-IPA-2021-01-09-IS02PT-GRP-SmartLibrarian-SystemArchitecture.mp4)
 
 # Section 4: Installation & User Guide
 CookWhatAh rides on a Telegram application as the user interface to implement our system. Please install Telegram in your respective platforms to run the application.
